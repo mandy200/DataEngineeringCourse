@@ -6,6 +6,14 @@ from sql_queries import *
 
 
 def process_song_file(cur, filepath):
+    """Reads songs log file, selects needed fields, inserts them into song and artist tables.
+    
+        Parameters:
+            cur : Cursor of the sparkifydb database (psycopg2.cursor()).
+            filepath : Filepath of the file to be analyzed (String).
+            
+        Return type: void
+    """
     # open song file
     df = pd.read_json(filepath, lines= True) #typ='Series'
 
@@ -19,6 +27,15 @@ def process_song_file(cur, filepath):
 
 
 def process_log_file(cur, filepath):
+    """Reads user activity log file, filters by NexSong, selects needed fields, transforms them and inserts
+    them into time, user and songplay tables.
+    
+            Parameters:
+                cur : Cursor of the sparkifydb database (psycopg2.cursor()).
+                filepath : Filepath of the file to be analyzed (str).
+                
+            Return type: void
+    """
     # open log file
     df = pd.read_json(filepath, lines= True) #typ='Series'
 
@@ -62,6 +79,17 @@ def process_log_file(cur, filepath):
 
 
 def process_data(cur, conn, filepath, func):
+     """Reads all files contained in filepath, and processes all logs found.
+     
+    Parameters:
+        cur: Cursor of the sparkifydb database (psycopg2.cursor()).
+        conn: Connection to the sparkifycdb database (psycopg2.connect()).
+        filepath: Filepath containing the analyzed logs (str).
+        func: Function used to process each log (python function).
+        
+    Returns:
+        Number of files processed
+    """
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
@@ -81,6 +109,14 @@ def process_data(cur, conn, filepath, func):
 
 
 def main():
+    """Function, extracting, transforming and loading source data to target tables.
+    It also closes the connection once the operation is succesfully done.
+     Parameters:
+                cur : Cursor of the sparkifydb database (psycopg2.cursor()).
+                conn: Connection to the sparkifycdb database (psycopg2.connect()).
+                filepath: Filepath of the file to be analyzed (str).
+                process_data: Function reading all files contained in filepath, and processing all logs found.
+    """
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
     cur = conn.cursor()
 
